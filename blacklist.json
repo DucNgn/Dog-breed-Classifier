@@ -8,6 +8,9 @@
         , "Carnivore"
         , "Puppy"
         , "Hound"
+        , "Canidae"
+        , "Vertebrate"
+        , "Snout"
         ],
 
     "breeds": []

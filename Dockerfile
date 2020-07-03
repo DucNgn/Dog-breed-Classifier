@@ -10,6 +10,7 @@ COPY . .
 ENV BLACKLIST=blacklist.json
 ENV PORT=5000
 ENV GOOGLE_APPLICATION_CREDENTIALS="/usr/src/app/GCloud_credentials.json"
+ENV DOG_API_KEY="/usr/src/app/TheDogAPI.json"
 
 CMD ["python", "./app.py"]
 
