@@ -47,6 +47,7 @@ def index():
 def page_not_found(e):
     return render_template("index.html")
 
+
 @app.route("/getResult")
 def getResult():
     img_link = "./temp/dog-group-3.jpg"
@@ -55,7 +56,6 @@ def getResult():
     data = addFilters(info)
     for each in data:
         print(each, file=sys.stderr)
-
     return render_template("index.html")
 
 def addFilters(info):
@@ -88,7 +88,7 @@ def identify_breed(img_link):
             best_score = label.score
     
     print("\nLABEL: ", best_label, file=sys.stderr)
-    print("\BEST SCORE: ", best_score, file=sys.stderr)
+    print("BEST SCORE: ", best_score, file=sys.stderr)
 
     return best_label, best_score  
 
