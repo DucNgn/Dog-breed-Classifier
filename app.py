@@ -3,6 +3,7 @@ import io
 import sys
 import json
 import http.client
+import shutil
 from google.cloud import vision
 from google.cloud.vision import types
 from flask import Flask, flash, redirect, request, render_template
@@ -13,6 +14,8 @@ os.environ['BLACKLIST'] = "./blacklist.json"
 os.environ['IMAGE_UPLOAD'] = "./temp"
 os.environ['PORT'] = "5000"
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = './GCloud_credentials.json'
+os.environ['DOG_API_KEY'] = './TheDogAPI.json'
+os.environ['TEMPDIR'] = './temp'
 
 app = Flask(__name__)
 app.config["IMAGE_UPLOAD"] = os.environ["IMAGE_UPLOAD"]
@@ -56,12 +59,20 @@ def index():
 def page_not_found(e):
     return render_template("index.html")
 
+def clean_TempDir():
+    tempLocation = str(os.environ['TEMPDIR'])
+    try:
+        shutil.rmtree(tempLocation)
+    except:
+        print('Error wile deleting directory')
+
 @app.route("/index", methods=["GET", "POST"])
 def upload_image():
     if request.method == "POST":
         if request.files:
             if "filesize" in request.cookies:
                 if not imageSize_is_allowed(request.cookies["filesize"]):
+                    flash("Filesize exceed maximum limit", "warning")
                     print("Filesize exceed maximum limit")
                     return redirect(request.url)
                 
@@ -74,12 +85,18 @@ def upload_image():
                     filename = secure_filename(image.filename)
                     image.save(os.path.join(app.config["IMAGE_UPLOAD"], filename))
                     print("Image saved")
+                    (isDog, breed, score, data) = getResult(os.path.join(app.config["IMAGE_UPLOAD"], filename))
+                    if isDog:
+                        return render_template("result.html")
+                    else:
+                        flash("Cannot detect a dog breed in the provided image", "warning")
+                        clean_TempDir()
                     return redirect(request.url)
                 else:
+                    flash("File extension is not allowed", "warning")
                     print("File extension is not allowed")
                     return redirect(request.url)
     return render_template("index.html")
-
 
 def image_is_allowed(image_name):
     if not "." in image_name:
@@ -90,22 +107,21 @@ def image_is_allowed(image_name):
 def imageSize_is_allowed(image_size):
     return (int(image_size) <= app.config['MAX_IMAGE_SIZE'])
 
-@app.route("/getResult")
-def getResult():
-    img_link = "./temp/dog-group-3.jpg"
-    (breed, score) = identify_breed(img_link)
+def getResult(img_link):
+    (isDog, breed, score) = identify_breed(img_link)
+    if not isDog:
+        return False, None, None, None
     info = getInfo(breed)
     data = addFilters(info)
     for each in data:
         print(each, file=sys.stderr)
-    return render_template("index.html")
+    return True, breed, score, data
 
 def addFilters(info):
     data = list()
     for each in info:
         data.append(DogInfo(each['id'], each['name'], each['breed_group'], each['weight'], each['height'], each['life_span'], each['temperament']))
     return data
-
 
 def identify_breed(img_link):
     client = vision.ImageAnnotatorClient()
@@ -131,8 +147,13 @@ def identify_breed(img_link):
     
     print("\nLABEL: ", best_label, file=sys.stderr)
     print("BEST SCORE: ", best_score, file=sys.stderr)
+    return is_Dog_Label(labels), best_label, best_score  
 
-    return best_label, best_score  
+def is_Dog_Label(labels):
+    for label in labels:
+        if label.description.lower() == "dog":
+            return True
+    return False
 
 def loadBlacklist():
     blacklistFile = str(os.environ['BLACKLIST'])
@@ -156,5 +177,6 @@ def getInfo(query):
     return data
         
 if __name__ == '__main__':
+    app.secret_key = 'secret'
     port = int(os.environ['PORT'])
     app.run(debug=True, host='0.0.0.0', port = port)
