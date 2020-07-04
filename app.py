@@ -2,13 +2,22 @@ import os
 import io
 import sys
 import json
-import requests
 import http.client
 from google.cloud import vision
 from google.cloud.vision import types
-from flask import Flask, flash, redirect, render_template
+from flask import Flask, flash, redirect, request, render_template
+from werkzeug.utils import secure_filename
+
+# TEMP environment variables
+os.environ['BLACKLIST'] = "./blacklist.json"
+os.environ['IMAGE_UPLOAD'] = "./temp"
+os.environ['PORT'] = "5000"
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = './GCloud_credentials.json'
 
 app = Flask(__name__)
+app.config["IMAGE_UPLOAD"] = os.environ["IMAGE_UPLOAD"]
+app.config["ALLOWED_IMAGE_EXTENSIONS"] = ["JPEG", "JPG", "PNG", "GIF"]
+app.config["MAX_IMAGE_SIZE"] = 50 * 1024 * 1024
 
 class DogInfo:
     def __init__(self, id, name, breed_group, weight, height, life_span, temperament):
@@ -47,6 +56,39 @@ def index():
 def page_not_found(e):
     return render_template("index.html")
 
+@app.route("/index", methods=["GET", "POST"])
+def upload_image():
+    if request.method == "POST":
+        if request.files:
+            if "filesize" in request.cookies:
+                if not imageSize_is_allowed(request.cookies["filesize"]):
+                    print("Filesize exceed maximum limit")
+                    return redirect(request.url)
+                
+                image = request.files["image"]
+
+                if image.filename == "":
+                    return redirect(request.url)
+
+                if image_is_allowed(image.filename):
+                    filename = secure_filename(image.filename)
+                    image.save(os.path.join(app.config["IMAGE_UPLOAD"], filename))
+                    print("Image saved")
+                    return redirect(request.url)
+                else:
+                    print("File extension is not allowed")
+                    return redirect(request.url)
+    return render_template("index.html")
+
+
+def image_is_allowed(image_name):
+    if not "." in image_name:
+        return False
+    ext = image_name.rsplit(".", 1)[1]
+    return (ext.upper() in app.config["ALLOWED_IMAGE_EXTENSIONS"])
+
+def imageSize_is_allowed(image_size):
+    return (int(image_size) <= app.config['MAX_IMAGE_SIZE'])
 
 @app.route("/getResult")
 def getResult():
