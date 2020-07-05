@@ -1,6 +1,7 @@
 import os, io, sys, json
 from os import listdir
-import uuid
+from hashlib import md5
+from time import localtime
 import http.client
 from google.cloud import vision
 from google.cloud.vision import types
@@ -96,8 +97,7 @@ def upload_image():
                     print("Image saved")
                     (isDog, breed, score, data) = getResult(imgPath)
                     if isDog:
-                        tempName = filename.format(str(uuid.uuid4().hex), datetime.now())
-                        tempImgPath = os.path.join(tempLocation, tempName) 
+                        tempImgPath = generateImgPath(tempLocation, filename)
                         os.rename(imgPath, tempImgPath)
                         data = make_Dicts(data)
                         if data:
@@ -109,6 +109,11 @@ def upload_image():
                         clean_Tempdir(tempLocation, filename)
                         return redirect(request.url)
     return render_template("index.html")
+
+def generateImgPath(tempLocation, filename):
+    prefix = "tempImg." + md5(str(localtime()).encode('utf-8')).hexdigest()
+    tempImgName = f"{prefix}__{filename}"
+    return os.path.join(tempLocation, tempImgName) 
 
 def make_Dicts(data):
     lst =[]

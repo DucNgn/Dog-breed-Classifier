@@ -2,3 +2,7 @@ GCloud_credentials.json
 .vscode/
 .DS_Store
 TheDogAPI.json
+**/tempImg.*.jpg
+**/tempImg.*.jpeg
+**/tempImg.*.png
+**/tempImg.*.gif
