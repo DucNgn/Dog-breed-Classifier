@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dog Identifier </title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+
+    <style>
+    img {
+        display:block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 50%;
+    }
+    
+    ul {
+        display: table;
+        margin: 0 auto;
+    }
+
+    table td, th{
+        text-align: center;
+    }
+    </style>
+</head>
+<body>
+    <center><h1><span class="badge badge-secondary"> Dog Breed Identifier </span></h1></center>
+    <img class="providedImg" src="{{provided_img}}" alt="Provided image" style="max-width: 100%;">
+    <hr>
+    <div class="label-result">
+        <center>
+            <ul>
+                <li>{{ label }}</li>
+                <li>Confident: {{ score }}</li>
+            </ul>
+        </center>
+    </div>
+    <hr>
+
+    {% block main %}
+    <div class="container">
+        <p><center> {{claimer}}</center></p>
+        <table border = 1 style="visibility: {{visibility}};">
+            <tr>
+                <th>Breed Name</th>
+                <th>Breed Group</th>
+                <th>Weight (imperial)</th>
+                <th>Weight (metric)</th>
+                <th>Height (imperial)</th>
+                <th>Height (metric)</th>
+                <th>Life Span </th>
+                <th>Temperaments</th>
+            </tr>
+            {% for each in data %}
+                <tr>
+                {% for key, value in each.items() %}
+                    <td> {{ value }}</td>
+                {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+
+        <hr>
+        <form action="/index" method="POST">
+        <center><button type="submit" class="btn btn-primary">Try again</button></center>
+        </form>
+
+    </div>
+    {% endblock %}
+</body>
+<footer>
+
+
+</footer>
+
+</html>

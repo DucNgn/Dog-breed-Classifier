@@ -1,7 +1,5 @@
-import os
-import io
-import sys
-import json
+import os, io, sys, json
+from os import listdir
 import http.client
 import shutil
 from google.cloud import vision
@@ -9,15 +7,14 @@ from google.cloud.vision import types
 from flask import Flask, flash, redirect, request, render_template
 from werkzeug.utils import secure_filename
 
-# TEMP environment variables
+# Load environment variables
 os.environ['BLACKLIST'] = "./blacklist.json"
 os.environ['IMAGE_UPLOAD'] = "./temp"
 os.environ['PORT'] = "5000"
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = './GCloud_credentials.json'
 os.environ['DOG_API_KEY'] = './TheDogAPI.json'
-os.environ['TEMPDIR'] = './temp'
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="temp")
 app.config["IMAGE_UPLOAD"] = os.environ["IMAGE_UPLOAD"]
 app.config["ALLOWED_IMAGE_EXTENSIONS"] = ["JPEG", "JPG", "PNG", "GIF"]
 app.config["MAX_IMAGE_SIZE"] = 50 * 1024 * 1024
@@ -59,44 +56,64 @@ def index():
 def page_not_found(e):
     return render_template("index.html")
 
-def clean_TempDir():
-    tempLocation = str(os.environ['TEMPDIR'])
-    try:
-        shutil.rmtree(tempLocation)
-    except:
-        print('Error wile deleting directory')
+@app.after_request
+def add_header(r):
+    r.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    r.headers["Pragma"] = "no-cache"
+    r.headers["Expires"] = "0"
+    r.headers['Cache-Control'] = 'public, max-age=0'
+    return r
 
 @app.route("/index", methods=["GET", "POST"])
 def upload_image():
+    tempLocation = str(os.environ['IMAGE_UPLOAD'])
     if request.method == "POST":
+        if not os.path.exists(tempLocation):
+            os.makedirs(tempLocation)
+
         if request.files:
             if "filesize" in request.cookies:
-                if not imageSize_is_allowed(request.cookies["filesize"]):
-                    flash("Filesize exceed maximum limit", "warning")
-                    print("Filesize exceed maximum limit")
-                    return redirect(request.url)
-                
                 image = request.files["image"]
 
-                if image.filename == "":
+                if not imageSize_is_allowed(request.cookies["filesize"]):
+                    flash("File size exceeds maximum limit", "warning")
                     return redirect(request.url)
 
-                if image_is_allowed(image.filename):
-                    filename = secure_filename(image.filename)
-                    image.save(os.path.join(app.config["IMAGE_UPLOAD"], filename))
-                    print("Image saved")
-                    (isDog, breed, score, data) = getResult(os.path.join(app.config["IMAGE_UPLOAD"], filename))
-                    if isDog:
-                        return render_template("result.html")
-                    else:
-                        flash("Cannot detect a dog breed in the provided image", "warning")
-                        clean_TempDir()
+                if image.filename == "":
+                    flash("Please upload an image to begin", "warning")
+                    return redirect(request.url)
+
+                if not image_is_allowed(image.filename):
+                    flash("File extension is not allowed", "warning")
                     return redirect(request.url)
                 else:
-                    flash("File extension is not allowed", "warning")
-                    print("File extension is not allowed")
-                    return redirect(request.url)
+                    filename = secure_filename(image.filename)
+                    imgPath = os.path.join(tempLocation, filename)
+                    image.save(imgPath)
+                    print("Image saved")
+                    (isDog, breed, score, data) = getResult(imgPath)
+                    if isDog:
+
+                        data = make_Dict(data)
+                        if data:
+                            return render_template("result.html", provided_img = imgPath, label=breed, score=score, data = data, claimer="Results", visibility="visible")
+                        else:
+                            return render_template("result.html", provided_img = imgPath, label=breed, score=score, data = data, claimer="Unfortunately, no data is available", visibility="hidden")
+                    else:
+                        flash("Cannot detect a dog breed in the provided image", "warning")
+                        clean_Tempdir(tempLocation, filename)
+                        return redirect(request.url)
     return render_template("index.html")
+
+def make_Dict(data):
+    lst =[]
+    for each in data:
+        lst.append({'Breed Name': each.name, 'Breed Group': each.breed_group, 'weight (imperial)': each.weight['imperial'], 'weight (metric)': each.weight['metric'], 'height (imperial)': each.height['imperial'], 'height (metric)': each.height['metric'], 'life span': each.life_span, 'temperament': each.temperament})
+    return lst
+
+def clean_Tempdir(tempLocation, filename, hasOldFile):
+    dirPath = os.path.join(tempLocation, filename)
+    os.remove(dirPath)
 
 def image_is_allowed(image_name):
     if not "." in image_name:
