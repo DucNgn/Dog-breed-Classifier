@@ -17,8 +17,8 @@ os.environ['DOG_API_KEY'] = './TheDogAPI.json'
 
 app = Flask(__name__, static_folder="temp")
 app.config["IMAGE_UPLOAD"] = os.environ["IMAGE_UPLOAD"]
-app.config["ALLOWED_IMAGE_EXTENSIONS"] = ["JPEG", "JPG", "PNG", "GIF"]
-app.config["MAX_IMAGE_SIZE"] = 500 * 1024 * 1024
+app.config["ALLOWED_IMAGE_EXTENSIONS"] = ["JPEG", "JPG", "PNG"]
+app.config["MAX_IMAGE_SIZE"] = 50 * 1024 * 1024
 
 class DogInfo:
     def __init__(self, id, name, breed_group, weight, height, life_span, temperament):
@@ -121,7 +121,7 @@ def make_Dicts(data):
         lst.append(each.makeDict())
     return lst
 
-def clean_Tempdir(tempLocation, filename, hasOldFile):
+def clean_Tempdir(tempLocation, filename):
     dirPath = os.path.join(tempLocation, filename)
     os.remove(dirPath)
 
