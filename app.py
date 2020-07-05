@@ -1,7 +1,7 @@
 import os, io, sys, json
 from os import listdir
+import uuid
 import http.client
-import shutil
 from google.cloud import vision
 from google.cloud.vision import types
 from flask import Flask, flash, redirect, request, render_template
@@ -17,7 +17,7 @@ os.environ['DOG_API_KEY'] = './TheDogAPI.json'
 app = Flask(__name__, static_folder="temp")
 app.config["IMAGE_UPLOAD"] = os.environ["IMAGE_UPLOAD"]
 app.config["ALLOWED_IMAGE_EXTENSIONS"] = ["JPEG", "JPG", "PNG", "GIF"]
-app.config["MAX_IMAGE_SIZE"] = 50 * 1024 * 1024
+app.config["MAX_IMAGE_SIZE"] = 500 * 1024 * 1024
 
 class DogInfo:
     def __init__(self, id, name, breed_group, weight, height, life_span, temperament):
@@ -33,6 +33,9 @@ class DogInfo:
         if not isinstance(other, DogInfo):
             return NotImplemented
         return self.id == other.id
+
+    def makeDict(self):
+        return {'Breed Name': self.name, 'Breed Group': self.breed_group, 'weight (imperial)': self.weight['imperial'], 'weight (metric)': self.weight['metric'], 'height (imperial)': self.height['imperial'], 'height (metric)': self.height['metric'], 'life span': self.life_span, 'temperament': self.temperament}
 
     def __str__(self):
         output = '''\
@@ -93,22 +96,24 @@ def upload_image():
                     print("Image saved")
                     (isDog, breed, score, data) = getResult(imgPath)
                     if isDog:
-
-                        data = make_Dict(data)
+                        tempName = filename.format(str(uuid.uuid4().hex), datetime.now())
+                        tempImgPath = os.path.join(tempLocation, tempName) 
+                        os.rename(imgPath, tempImgPath)
+                        data = make_Dicts(data)
                         if data:
-                            return render_template("result.html", provided_img = imgPath, label=breed, score=score, data = data, claimer="Results", visibility="visible")
+                            return render_template("result.html", provided_img = tempImgPath, label=breed, score=score, data = data, claimer="Results", visibility="visible")
                         else:
-                            return render_template("result.html", provided_img = imgPath, label=breed, score=score, data = data, claimer="Unfortunately, no data is available", visibility="hidden")
+                            return render_template("result.html", provided_img = tempImgPath, label=breed, score=score, data = data, claimer="Unfortunately, no data is available", visibility="hidden")
                     else:
                         flash("Cannot detect a dog breed in the provided image", "warning")
                         clean_Tempdir(tempLocation, filename)
                         return redirect(request.url)
     return render_template("index.html")
 
-def make_Dict(data):
+def make_Dicts(data):
     lst =[]
     for each in data:
-        lst.append({'Breed Name': each.name, 'Breed Group': each.breed_group, 'weight (imperial)': each.weight['imperial'], 'weight (metric)': each.weight['metric'], 'height (imperial)': each.height['imperial'], 'height (metric)': each.height['metric'], 'life span': each.life_span, 'temperament': each.temperament})
+        lst.append(each.makeDict())
     return lst
 
 def clean_Tempdir(tempLocation, filename, hasOldFile):
