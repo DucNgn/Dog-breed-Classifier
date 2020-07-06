@@ -21,7 +21,7 @@ app.config["ALLOWED_IMAGE_EXTENSIONS"] = ["JPEG", "JPG", "PNG"]
 app.config["MAX_IMAGE_SIZE"] = 50 * 1024 * 1024
 
 class DogInfo:
-    def __init__(self, id, name, breed_group, weight, height, life_span, temperament):
+    def __init__(self, id = "-1", name = "Unknown", breed_group="Unknown", weight="Unknown", height="Unknown", life_span="Unknown", temperament='Unknown'):
         self.id = id
         self.name = name
         self.breed_group = breed_group
@@ -100,6 +100,7 @@ def upload_image():
                         tempImgPath = generateImgPath(tempLocation, filename)
                         os.rename(imgPath, tempImgPath)
                         data = make_Dicts(data)
+                        score = str(score * 100) + " %"
                         if data:
                             return render_template("result.html", provided_img = tempImgPath, label=breed, score=score, data = data, claimer="Results", visibility="visible")
                         else:
@@ -147,6 +148,20 @@ def getResult(img_link):
 def addFilters(info):
     data = list()
     for each in info:
+        if 'id' not in each:
+            each['id'] = "-1"
+        if 'name' not in each:
+            each['name'] = "Unavailable"
+        if 'breed_group' not in each:
+            each['breed_group'] = "No data"
+        if 'weight' not in each:
+            each['weight'] = "No data"
+        if 'height' not in each:
+            each['height'] = "No data"
+        if 'life_span' not in each:
+            each['life_span'] = "No data"
+        if 'temperament' not in each:
+            each['temperament'] = "No data"
         data.append(DogInfo(each['id'], each['name'], each['breed_group'], each['weight'], each['height'], each['life_span'], each['temperament']))
     return data
 
