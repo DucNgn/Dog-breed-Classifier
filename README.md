@@ -1,12 +1,13 @@
 # Dog Breed Classifier
 
+ <ins>[Click here](https://doggo-breed-classifier.herokuapp.com/index)</ins> to try
+
 ## About:
-Ever see a cute doggo on the street? And wonder what kind of dog is that?
+Ever seen a cute doggo on the street? And wonder what kind of dog is that?
 SAY NO MORE, I got you! Just take a picture of that cutie, and let Dog Breed Classifier help you. Upload the image, sit back and ***voilà***, the detailed information of your cute dog is right in front of you!!
 
 <p align="center">
     <img src="./demo/background.jpg">
-    <a href="https://doggo-breed-classifier.herokuapp.com/index">Try now</a>
 </p>
 
 ## Demo
