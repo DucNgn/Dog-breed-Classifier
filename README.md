@@ -9,6 +9,22 @@ SAY NO MORE, I got you! Just take a picture of that cutie, and let Dog Breed Cla
     <a href="https://doggo-breed-classifier.herokuapp.com/index">Try now</a>
 </p>
 
+## Demo
+
+#### no.1
+<p align="center">
+    <img src="./demo/Max_demo.png">
+    <small>My good boi: Max</small>
+</p>
+
+#### no.2
+<p align="center">
+    <img src="./demo/Siberian_Husky_demo.png">
+    <small>A Siberian Husky</small>
+</p>
+
+
+
 ## Disclaimer:
 > The result might not be accurate in some situations due to bias when filtering. 
 In addition, labeling might identify another object if the background of the image is too overwhelming, or simply because there are too many subjects in the picture.
