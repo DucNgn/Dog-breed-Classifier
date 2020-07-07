@@ -1,0 +1,44 @@
+img {
+    display:block;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 50%;
+    max-height: 50%;
+}
+
+#result {
+    text-align: center;
+}
+
+table td, th{
+    text-align: center;
+}
+
+#footer {
+    text-align: center;
+}
+
+#submit-btn {
+    font-size: 1vw;
+}
+
+body {
+    font-size: 1vw;
+}
+
+h1 {
+    font-size: 2.5vw;
+}
+
+h4 {
+    font-size: 1.5vw;
+}
+
+blockquote {
+    max-width:600px;
+    border-left: 3px solid #897860; 
+    padding-left: 5px;
+    margin:0 auto;
+    width:auto;
+    display:table
+}

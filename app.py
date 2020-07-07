@@ -40,7 +40,6 @@ class DogInfo:
 
     def __str__(self):
         output = '''\
-
             ...ID: {id} 
             ...NAME: {name}
             ...BREED_GROUP: {breed_group}
@@ -80,14 +79,17 @@ def upload_image():
                 image = request.files["image"]
 
                 if not imageSize_is_allowed(request.cookies["filesize"]):
+                    # Check for file size limit
                     flash("File size exceeds maximum limit", "warning")
                     return redirect(request.url)
 
                 if image.filename == "":
+                    # Check if it is not empty file
                     flash("Please upload an image to begin", "warning")
                     return redirect(request.url)
 
                 if not image_is_allowed(image.filename):
+                    # Check extension of the file
                     flash("File extension is not allowed", "warning")
                     return redirect(request.url)
                 else:
@@ -96,17 +98,18 @@ def upload_image():
                     image.save(imgPath)
                     print("Image saved")
                     (isDog, breed, score, data) = getResult(imgPath)
+                    # Check if the image contains a dog
                     if isDog:
                         tempImgPath = generateImgPath(tempLocation, filename)
                         os.rename(imgPath, tempImgPath)
                         data = make_Dicts(data)
                         score = str(score * 100) + " %"
                         if data:
-                            return render_template("result.html", provided_img = tempImgPath, label=breed, score=score, data = data, claimer="Results", visibility="visible")
+                            return render_template("result.html", provided_img = tempImgPath, label=breed, score=score, data = data, claimer="The detail info is as followed", visibility="visible")
                         else:
                             return render_template("result.html", provided_img = tempImgPath, label=breed, score=score, data = data, claimer="Unfortunately, no data is available", visibility="hidden")
                     else:
-                        flash("Cannot detect a dog breed in the provided image", "warning")
+                        flash("Cannot detect a dog breed in the provided image", "info")
                         clean_Tempdir(tempLocation, filename)
                         return redirect(request.url)
     return render_template("index.html")
@@ -147,6 +150,7 @@ def getResult(img_link):
 
 def addFilters(info):
     data = list()
+    # Validate data returned by the API service
     for each in info:
         if 'id' not in each:
             each['id'] = "-1"
@@ -207,6 +211,7 @@ def loadBlacklist():
     return blacklist
 
 def getInfo(query):
+    # Get information about a breed via an API service
     conn = http.client.HTTPSConnection("api.thedogapi.com")
     APIKEYFILE = str(os.environ['DOG_API_KEY'])
     with open(APIKEYFILE) as headerFile:
