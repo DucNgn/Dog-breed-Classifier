@@ -4,6 +4,7 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dog Breed Classifier </title>
+    <!-- Jquery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/konpa/devicon@master/devicon.min.css">
@@ -49,7 +50,9 @@
                         <label class = "custom-file-label" for="image">Upload your file</label>
                     </div>
                 </div>
+
                 <center><button type="submit" class="btn btn-primary" id="submit-btn">Submit</button></center>
+
                 <hr>
                 <blockquote>
                     <strong><center>About</center></strong>
@@ -106,5 +109,10 @@
         $(this).next('.custom-file-label').html(fileName);
         readURL(this);
     })
+
+    $('#submit-btn').on('click', function() {
+        $('#submit-btn').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Submitting');
+    })
+
 </script>
 </html>
