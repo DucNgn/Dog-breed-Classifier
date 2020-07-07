@@ -9,6 +9,7 @@ from flask import Flask, flash, redirect, request, render_template
 from werkzeug.utils import secure_filename
 
 # Config environment variables
+os.environ['IMAGE_UPLOAD'] = "./temp"
 app = Flask(__name__, static_folder="temp")
 app.config["IMAGE_UPLOAD"] = os.environ["IMAGE_UPLOAD"]
 app.config["ALLOWED_IMAGE_EXTENSIONS"] = ["JPEG", "JPG", "PNG"]
