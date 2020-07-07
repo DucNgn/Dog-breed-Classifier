@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dog Breed Classifier </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/konpa/devicon@master/devicon.min.css">
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+    <!-- Static Serving -->
+    <link rel="stylesheet" href="/temp/static_serving/style.css">
+    <script src="/temp/static_serving/functions.js"></script>
+    <style>
+    #result {
+        text-align: center;
+    }
+    table td, th{
+        text-align: center;
+    }
+    </style>
+</head>
+<body onload=display_ct();>
+    <br>
+    <center><h1><span> Dog Breed Classifier </span></h1></center>
+    <img class="providedImg" src="{{provided_img}}" alt="Provided image" style ="max-width: 50%; max-height: 50%;">
+    <hr>
+    <div class="alert alert-success" role="alert">
+            <div id="result">
+                <h4 class="alert-heading">Done!</h4>
+                Breed detected: {{ label }}
+                <br>
+                Confident: {{ score }}
+            </div>
+      </div>
+
+    {% block main %}
+    <div class="container">
+        <h4><center><strong>{{claimer}}</strong></center></h4>
+        <table border = 1 style="visibility: {{visibility}};">
+            <tr>
+                <th>Breed Name</th>
+                <th>Breed Group</th>
+                <th>Weight (imperial)</th>
+                <th>Weight (metric)</th>
+                <th>Height (imperial)</th>
+                <th>Height (metric)</th>
+                <th>Life Span </th>
+                <th>Temperaments</th>
+            </tr>
+            {% for each in data %}
+                <tr>
+                {% for key, value in each.items() %}
+                    <td> {{ value }}</td>
+                {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+        <br>
+
+        <blockquote>
+            <strong>Disclaimer:</strong> The result might not be accurate in some situations due to bias when filtering.
+            In addition, labelling might identify another object if the background of the image is too overwhelming, or simply because there are too many subjects in the picture.
+            This project is mainly to demonstrate the potential of using Google Vision AI for development.
+            As a result, this project should not be used in development.  
+        </blockquote>
+
+        <hr>
+        <form action="/index" method="POST">
+        <center><button type="submit" class="btn btn-primary">Try again</button></center>
+        </form>
+    </div>
+    {% endblock %}
+    
+</body>
+
+<footer>
+    <br>
+	<div id="footer">
+		<span>
+			<h5>Author:  Duc Nguyen </h5>
+            <p> <i class="devicon-linkedin-plain colored"></i> <a href="https://www.linkedin.com/in/ductringn/" target="_blank"> Linkedin </a></p>
+            <p> <i class="devicon-github-plain-wordmark colored"></i> <a href="https://github.com/DukeNgn" target="_blank"> GitHub Profile </a></p>
+            <p> <i class="devicon-github-plain colored"></i> <a href="https://github.com/DukeNgn/Dog-breed-Classifier" target="_blank"> Repo of the project </a></p>
+			<p>
+                <small id="time"></small>
+                <br>
+				<small>
+					Duc Nguyen. All rights reserved.
+				</small>
+			</p>
+		</span>
+	</div>
+</footer>
+
+
+</html>
