@@ -8,13 +8,7 @@ from google.cloud.vision import types
 from flask import Flask, flash, redirect, request, render_template
 from werkzeug.utils import secure_filename
 
-# Load environment variables
-os.environ['BLACKLIST'] = "./blacklist.json"
-os.environ['IMAGE_UPLOAD'] = "./temp"
-os.environ['PORT'] = "5000"
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = './GCloud_credentials.json'
-os.environ['DOG_API_KEY'] = './TheDogAPI.json'
-
+# Config environment variables
 app = Flask(__name__, static_folder="temp")
 app.config["IMAGE_UPLOAD"] = os.environ["IMAGE_UPLOAD"]
 app.config["ALLOWED_IMAGE_EXTENSIONS"] = ["JPEG", "JPG", "PNG"]
