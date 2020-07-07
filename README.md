@@ -1,4 +1,4 @@
-# Dog Breed Classifier
+# Dog Breed Classifier :dog:
 
  <ins>[Click here](https://doggo-breed-classifier.herokuapp.com/index)</ins> to try
 
