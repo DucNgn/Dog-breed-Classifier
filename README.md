@@ -19,7 +19,7 @@ SAY NO MORE, I got you! Just take a picture of that cutie, and let Dog Breed Cla
 
 #### no.2
 <p align="center">
-    <img src="./demo/Siberian_Husky_demo.png">
+    <img src="./demo/Siberian_Husky_Demo.png">
     <small>A Siberian Husky</small>
 </p>
 
