@@ -100,7 +100,7 @@ def upload_image():
                         data = make_Dicts(data)
                         score = str(score * 100) + " %"
                         if data:
-                            return render_template("result.html", provided_img = tempImgPath, label=breed, score=score, data = data, claimer="The detail info is as followed", visibility="visible")
+                            return render_template("result.html", provided_img = tempImgPath, label=breed, score=score, data = data, claimer="The detail info is as follows", visibility="visible")
                         else:
                             return render_template("result.html", provided_img = tempImgPath, label=breed, score=score, data = data, claimer="Unfortunately, no data is available", visibility="hidden")
                     else:
